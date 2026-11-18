@@ -5,6 +5,16 @@
 
 import * as tareaModel from '../models/tarea.model.js';
 
+// Convierte el parámetro a entero; devuelve NaN si no es un entero válido
+const parsearId = (valor) => {
+  const id = Number(valor);
+  return Number.isInteger(id) ? id : NaN;
+};
+
+const tituloValido = (titulo) =>
+  typeof titulo === 'string' && titulo.trim() !== '';
+
+
 // Enviar tareas en JSON o texto plano
 const responderTareas = (req, res, tareas) => {
 
@@ -40,24 +50,24 @@ const obtenerTodas = (req, res) => {
 // GET /api/tareas/:id - Obtener una tarea por ID
 const obtenerPorId = (req, res) => {
   try {
-    const id = parseInt(req.params.id);
-    
+    const id = parsearId(req.params.id);
+
     if (isNaN(id)) {
       return res.status(400).json({
         success: false,
         message: 'ID inválido. Debe ser un número'
       });
     }
-    
+
     const tarea = tareaModel.obtenerPorId(id);
-    
+
     if (!tarea) {
       return res.status(404).json({
         success: false,
         message: `Tarea con ID ${id} no encontrada`
       });
     }
-    
+
     res.json({
       success: true,
       data: tarea
@@ -74,18 +84,24 @@ const obtenerPorId = (req, res) => {
 // POST /api/tareas - Crear una nueva tarea
 const crear = (req, res) => {
   try {
-    const { titulo, completada } = req.body;
-    
-    // Validar datos requeridos
-    if (!titulo) {
+    const { titulo, completada } = req.body ?? {};
+
+    if (!tituloValido(titulo)) {
       return res.status(400).json({
         success: false,
-        message: 'El campo "titulo" es requerido'
+        message: 'El campo "titulo" es requerido y debe ser un texto no vacío'
       });
     }
-    
-    const nuevaTarea = tareaModel.crear({ titulo, completada });
-    
+
+    if (completada !== undefined && typeof completada !== 'boolean') {
+      return res.status(400).json({
+        success: false,
+        message: 'El campo "completada" debe ser booleano (true o false)'
+      });
+    }
+
+    const nuevaTarea = tareaModel.crear({ titulo: titulo.trim(), completada });
+
     res.status(201).json({
       success: true,
       message: 'Tarea creada exitosamente',
@@ -103,16 +119,16 @@ const crear = (req, res) => {
 // PUT /api/tareas/:id - Actualizar tarea completamente
 const actualizarCompleta = (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parsearId(req.params.id);
     const { titulo, completada } = req.body;
-    
+
     if (isNaN(id)) {
       return res.status(400).json({
         success: false,
         message: 'ID inválido. Debe ser un número'
       });
     }
-    
+
     // Validar datos requeridos
     if (!titulo) {
       return res.status(400).json({
@@ -120,16 +136,16 @@ const actualizarCompleta = (req, res) => {
         message: 'El campo "titulo" es requerido'
       });
     }
-    
+
     const tareaActualizada = tareaModel.actualizarCompleta(id, { titulo, completada });
-    
+
     if (!tareaActualizada) {
       return res.status(404).json({
         success: false,
         message: `Tarea con ID ${id} no encontrada`
       });
     }
-    
+
     res.json({
       success: true,
       message: 'Tarea actualizada completamente',
@@ -147,33 +163,46 @@ const actualizarCompleta = (req, res) => {
 // PATCH /api/tareas/:id - Actualizar tarea parcialmente
 const actualizarParcial = (req, res) => {
   try {
-    const id = parseInt(req.params.id);
-    const datosParciales = req.body;
-    
-    if (isNaN(id)) {
-      return res.status(400).json({
-        success: false,
-        message: 'ID inválido. Debe ser un número'
-      });
+    const id = parsearId(req.params.id);
+    const { titulo, completada } = req.body ?? {};
+    const datosParciales = {};
+
+    if (titulo !== undefined) {
+      if (!tituloValido(titulo)) {
+        return res.status(400).json({
+          success: false,
+          message: 'El campo "titulo" debe ser un texto no vacío'
+        });
+      }
+      datosParciales.titulo = titulo.trim();
     }
-    
-    // Si no hay datos para actualizar
+
+    if (completada !== undefined) {
+      if (typeof completada !== 'boolean') {
+        return res.status(400).json({
+          success: false,
+          message: 'El campo "completada" debe ser booleano (true o false)'
+        });
+      }
+      datosParciales.completada = completada;
+    }
+
     if (Object.keys(datosParciales).length === 0) {
       return res.status(400).json({
         success: false,
-        message: 'Debe enviar al menos un campo para actualizar'
+        message: 'Debe enviar al menos un campo válido para actualizar (titulo o completada)'
       });
     }
-    
+
     const tareaActualizada = tareaModel.actualizarParcial(id, datosParciales);
-    
+
     if (!tareaActualizada) {
       return res.status(404).json({
         success: false,
         message: `Tarea con ID ${id} no encontrada`
       });
     }
-    
+
     res.json({
       success: true,
       message: 'Tarea actualizada parcialmente',
@@ -191,24 +220,24 @@ const actualizarParcial = (req, res) => {
 // DELETE /api/tareas/:id - Eliminar una tarea
 const eliminar = (req, res) => {
   try {
-    const id = parseInt(req.params.id);
-    
+    const id = parsearId(req.params.id);
+
     if (isNaN(id)) {
       return res.status(400).json({
         success: false,
         message: 'ID inválido. Debe ser un número'
       });
     }
-    
+
     const tareaEliminada = tareaModel.eliminar(id);
-    
+
     if (!tareaEliminada) {
       return res.status(404).json({
         success: false,
         message: `Tarea con ID ${id} no encontrada`
       });
     }
-    
+
     res.json({
       success: true,
       message: 'Tarea eliminada exitosamente',
@@ -228,7 +257,7 @@ const buscarPorTitulo = (req, res) => {
   try {
     const { q } = req.query;
 
-    if (!q || !q.trim()) {
+    if (typeof q !== 'string' || !q.trim()) {
       return res.status(400).json({
         success: false,
         message: 'Debe proporcionar un título para buscar mediante el parámetro q'

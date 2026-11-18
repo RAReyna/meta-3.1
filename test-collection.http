@@ -50,3 +50,18 @@ Content-Type: application/json
 
 ### 9. DELETE - Eliminar una tarea
 DELETE {{baseUrl}}/api/tareas/{{tareaId}}
+
+### 400 - titulo no es texto
+POST http://localhost:3000/api/tareas
+Content-Type: application/json
+
+{"titulo": 123}
+
+### 400 - sin body
+POST http://localhost:3000/api/tareas
+
+### 404 - no existe
+GET http://localhost:3000/api/tareas/999
+
+### 400 - ID inválido
+GET http://localhost:3000/api/tareas/abc
