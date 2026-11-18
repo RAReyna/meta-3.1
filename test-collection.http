@@ -1,0 +1,52 @@
+
+@baseUrl = http://localhost:3000
+@tareaId = 1
+
+### 1. GET - Obtener todas las tareas (JSON)
+GET {{baseUrl}}/api/tareas
+Accept: application/json
+
+### 2. GET - Obtener todas las tareas (texto plano)
+GET {{baseUrl}}/api/tareas?formato=text
+Accept: text/plain
+
+### 3. GET - Obtener una tarea por ID
+GET {{baseUrl}}/api/tareas/{{tareaId}}
+Accept: application/json
+
+### 4. GET - Buscar tareas por título
+GET {{baseUrl}}/api/tareas/buscar?q=express
+Accept: application/json
+
+### 5. GET - Buscar tareas por título (texto plano)
+GET {{baseUrl}}/api/tareas/buscar?q=express&formato=text
+Accept: text/plain
+
+### 6. POST - Crear una tarea
+POST {{baseUrl}}/api/tareas
+Content-Type: application/json
+
+{
+  "titulo": "Estudiar ES Modules",
+  "completada": false
+}
+
+### 7. PUT - Actualizar una tarea completamente
+PUT {{baseUrl}}/api/tareas/{{tareaId}}
+Content-Type: application/json
+
+{
+  "titulo": "Estudiar Express y ES Modules",
+  "completada": true
+}
+
+### 8. PATCH - Actualizar una tarea parcialmente
+PATCH {{baseUrl}}/api/tareas/{{tareaId}}
+Content-Type: application/json
+
+{
+  "completada": false
+}
+
+### 9. DELETE - Eliminar una tarea
+DELETE {{baseUrl}}/api/tareas/{{tareaId}}
