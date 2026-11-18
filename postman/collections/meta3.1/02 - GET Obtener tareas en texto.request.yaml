@@ -1,0 +1,16 @@
+$kind: http-request
+description: ""
+url: http://localhost:3000/api/tareas?formato=text
+method: GET
+queryParams:
+  formato: text
+body:
+  type: json
+  content: "{\r
+
+    \  \"titulo\": \"Aprender Node.js\",\r
+
+    \  \"completada\": \"true\"\r
+
+    }"
+order: 8000
