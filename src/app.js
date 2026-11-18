@@ -2,8 +2,8 @@
  * Configuración de la aplicación Express
  */
 
-const express = require('express');
-const tareaRoutes = require('./routes/tarea.routes');
+import express from 'express';
+import tareaRoutes from './routes/tarea.routes.js';
 
 const app = express();
 
@@ -56,4 +56,4 @@ app.use((err, req, res, next) => {
   });
 });
 
-module.exports = app;
+export default app;

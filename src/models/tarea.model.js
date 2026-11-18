@@ -76,12 +76,20 @@ const eliminar = (id) => {
   return tareaEliminada;
 };
 
+// Buscar tareas por título
+const buscarPorTitulo = (titulo) => {
+  return tareas.filter(tarea =>
+    tarea.titulo.toLowerCase().includes(titulo.toLowerCase())
+  );
+};
 // Exportar todas las funciones del modelo
-module.exports = {
+
+export {
   obtenerTodas,
   obtenerPorId,
   crear,
   actualizarCompleta,
   actualizarParcial,
-  eliminar
+  eliminar,
+  buscarPorTitulo
 };

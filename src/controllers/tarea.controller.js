@@ -3,17 +3,31 @@
  * Maneja las peticiones HTTP y responde con JSON
  */
 
-const tareaModel = require('../models/tarea.model');
+import * as tareaModel from '../models/tarea.model.js';
+
+// Enviar tareas en JSON o texto plano
+const responderTareas = (req, res, tareas) => {
+
+  if (req.query.formato === 'text') {
+    const texto = tareas.map(tarea =>
+      `ID: ${tarea.id} | Título: ${tarea.titulo} | Completada: ${tarea.completada ? 'Sí' : 'No'}`
+    ).join('\n');
+
+    return res.type('text/plain').send(texto || 'No se encontraron tareas.');
+  }
+
+  res.json({
+    success: true,
+    data: tareas,
+    count: tareas.length
+  });
+};
 
 // GET /api/tareas - Obtener todas las tareas
 const obtenerTodas = (req, res) => {
   try {
     const tareas = tareaModel.obtenerTodas();
-    res.json({
-      success: true,
-      data: tareas,
-      count: tareas.length
-    });
+    responderTareas(req, res, tareas);
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -209,13 +223,38 @@ const eliminar = (req, res) => {
   }
 };
 
+// GET /api/tareas/buscar?q=express
+const buscarPorTitulo = (req, res) => {
+  try {
+    const { q } = req.query;
+
+    if (!q || !q.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Debe proporcionar un título para buscar mediante el parámetro q'
+      });
+    }
+
+    const tareas = tareaModel.buscarPorTitulo(q.trim());
+
+    responderTareas(req, res, tareas);
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error al buscar tareas',
+      error: error.message
+    });
+  }
+};
+
 // Exportar todos los métodos del controlador
-module.exports = {
+export {
   obtenerTodas,
   obtenerPorId,
   crear,
   actualizarCompleta,
   actualizarParcial,
-  eliminar
+  eliminar,
+  buscarPorTitulo
 };
-

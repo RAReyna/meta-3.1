@@ -1,29 +1,31 @@
 /**
  * Rutas de Tareas
- * Define los endpoints de la API
  */
 
-const express = require('express');
-const tareaController = require('../controllers/tarea.controller');
+import express from 'express';
+import * as tareaController from '../controllers/tarea.controller.js';
 
 const router = express.Router();
 
-// GET /api/tareas - Obtener todas las tareas
+// GET: Obtener todas las tareas
 router.get('/', tareaController.obtenerTodas);
 
-// GET /api/tareas/:id - Obtener una tarea por ID
+// GET: Buscar tareas por título
+router.get('/buscar', tareaController.buscarPorTitulo);
+
+// GET: Obtener una tarea por ID
 router.get('/:id', tareaController.obtenerPorId);
 
-// POST /api/tareas - Crear una nueva tarea
+// POST: Crear una tarea
 router.post('/', tareaController.crear);
 
-// PUT /api/tareas/:id - Actualizar tarea completamente
+// PUT: Actualizar una tarea completamente
 router.put('/:id', tareaController.actualizarCompleta);
 
-// PATCH /api/tareas/:id - Actualizar tarea parcialmente
+// PATCH: Actualizar una tarea parcialmente
 router.patch('/:id', tareaController.actualizarParcial);
 
-// DELETE /api/tareas/:id - Eliminar una tarea
+// DELETE: Eliminar una tarea
 router.delete('/:id', tareaController.eliminar);
 
-module.exports = router;
+export default router;
