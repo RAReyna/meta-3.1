@@ -175,6 +175,32 @@ Las siguientes imágenes muestran las pruebas realizadas en Postman:
 
 ![PUT - Mostrar error 500](docs/screenshots/500.jpeg)
 
+### Pruebas con Postman
+
+El proyecto incluye una colección de Postman para facilitar las pruebas de los endpoints de la API.
+
+La colección se encuentra en el directorio `postman/` del repositorio.
+
+**Cómo utilizar la colección:**
+
+1. Abrir Postman.
+2. Seleccionar la opción de importar una colección.
+3. Localizar el archivo de colección dentro del directorio `postman/`.
+4. Importar el archivo en Postman.
+5. Iniciar el servidor con `pnpm run dev`.
+6. Ejecutar las peticiones para comprobar el funcionamiento de los endpoints.
+
+La colección incluye peticiones para:
+- Obtener todas las tareas.
+- Obtener una tarea por ID.
+- Buscar tareas por título.
+- Crear una tarea.
+- Actualizar una tarea completamente mediante PUT.
+- Actualizar una tarea parcialmente mediante PATCH.
+- Eliminar una tarea.
+
+También se incluyen peticiones para consultar los resultados en formato de texto plano.
+
 ## Persistencia de datos
 
 El proyecto utiliza un arreglo en memoria para almacenar las tareas. Por lo tanto, los datos no son persistentes y se restablecen cuando se reinicia el servidor.
